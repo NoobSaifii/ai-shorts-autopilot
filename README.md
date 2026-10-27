@@ -43,6 +43,28 @@ These Shorts were written, voiced, illustrated, edited and uploaded with **no hu
 
 ---
 
+## 📡 11 channels running on this pipeline
+
+Each channel has its own prompt, voice, music mood and caption colour. All of them post daily, fully automated, from a single GitHub Actions run.
+
+| # | Channel | Niche | YouTube | Instagram | Facebook |
+|:-:|---|---|:-:|:-:|:-:|
+| 1 | **Blade Archives** | Ancient weapons & warfare | [@bladearchives1](https://www.youtube.com/@bladearchives1) | [@blade_archives](https://www.instagram.com/blade_archives/) | [Page](https://www.facebook.com/1364659166722912) |
+| 2 | **Muslim Ummah Awareness Hub** | Forgotten Muslim scientists & Islamic history (Hindi/Urdu) | [@muslim_ummah_awareness_hub](https://www.youtube.com/@muslim_ummah_awareness_hub) | [@muslim_ummah_awareness_hub_](https://www.instagram.com/muslim_ummah_awareness_hub_/) | [Page](https://www.facebook.com/104313485677148) |
+| 3 | **Fracture Layer** | Strange science & unsolved mysteries | [@fracturelayer](https://www.youtube.com/@fracturelayer) | [@fracture_layer](https://www.instagram.com/fracture_layer/) | [Page](https://www.facebook.com/1273556632512714) |
+| 4 | **Filed And Forgotten** | True crime & cold cases | [@filedandforgottn](https://www.youtube.com/@filedandforgottn) | [@filed_and_forgotten1](https://www.instagram.com/filed_and_forgotten1/) | [Page](https://www.facebook.com/1232850446587692) |
+| 5 | **Ruined Clock** | Lost civilizations & ancient mysteries | [@ruinedclock](https://www.youtube.com/@ruinedclock) | [@ruined_clock](https://www.instagram.com/ruined_clock/) | [Page](https://www.facebook.com/1334185009778956) |
+| 6 | **Myth Bleed** | Mythology & dark gods | [@mythbleed](https://www.youtube.com/@mythbleed) | [@myth_bleed](https://www.instagram.com/myth_bleed/) | [Page](https://www.facebook.com/1329967713528184) |
+| 7 | **Erased Lore** | WW2 & military secrets | [@erasedlore](https://www.youtube.com/@erasedlore) | [@erased_lore1](https://www.instagram.com/erased_lore1/) | [Page](https://www.facebook.com/1245093492029691) |
+| 8 | **The Cursed Map** | Cursed & haunted places | [@the-cursed-map](https://www.youtube.com/@the-cursed-map) | [@the_cursed_map](https://www.instagram.com/the_cursed_map/) | [Page](https://www.facebook.com/1281311481736866) |
+| 9 | **Covered Pages** | Dark history they deleted | [@coveredpages](https://www.youtube.com/@coveredpages) | [@covered_pages1](https://www.instagram.com/covered_pages1/) | [Page](https://www.facebook.com/1294736537062110) |
+| 10 | **Classified Cognition** | Dark psychology | [@classifiedcognition](https://www.youtube.com/@classifiedcognition) | [@classified_cognition](https://www.instagram.com/classified_cognition/) | [Page](https://www.facebook.com/1343132568885174) |
+| 11 | **Restricted Lore** | Hidden truths & cover-ups | [@restrictedlore](https://www.youtube.com/@restrictedlore) | [@restrictedlore1](https://www.instagram.com/restrictedlore1/) | [Page](https://www.facebook.com/1275179939018648) |
+
+> The prompts for all 11 channels are included in [`prompts/`](prompts/) — use them as-is or as templates for your own niche.
+
+---
+
 ## ✨ Features
 
 | | |
