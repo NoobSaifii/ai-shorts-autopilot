@@ -17,7 +17,7 @@ Topic → script → voice → AI images → cinematic edit → captions → upl
 
 <a href="https://www.youtube.com/@BladeArchives1"><img src="docs/media/demo.gif" width="270" alt="Demo video made by this pipeline"></a>
 
-**▶ Every video on [@BladeArchives1](https://www.youtube.com/@BladeArchives1) was generated and uploaded by this exact pipeline.**
+**▶ Every video on these [11 channels](#-11-channels-running-on-this-pipeline) (like [@BladeArchives1](https://www.youtube.com/@BladeArchives1)) was generated and uploaded by this exact pipeline.**
 <br><sub>Preview above is a real output (sound on: <a href="docs/media/sample-blade-archives.mp4">download the full sample MP4</a>).</sub>
 
 <br>
@@ -30,16 +30,29 @@ Topic → script → voice → AI images → cinematic edit → captions → upl
 
 ## 📺 See it in action
 
-These Shorts were written, voiced, illustrated, edited and uploaded with **no human in the loop**:
+One top Short from **each of the 11 channels**. All of them were written, voiced, illustrated, edited and uploaded by this pipeline with **no human in the loop**. Click any thumbnail to watch.
 
-| | | |
-|:-:|:-:|:-:|
-| [![Roman Bolt Heads](https://i.ytimg.com/vi/QONsjlyKCnk/hqdefault.jpg)](https://www.youtube.com/shorts/QONsjlyKCnk) | [![Salt Mine Weapon Secrets](https://i.ytimg.com/vi/lge7_Q3APHw/hqdefault.jpg)](https://www.youtube.com/shorts/lge7_Q3APHw) | [![Parthian Feint](https://i.ytimg.com/vi/ZuWa8B1F314/hqdefault.jpg)](https://www.youtube.com/shorts/ZuWa8B1F314) |
-| **Roman Bolt Heads Found in Skeletons** | **Ancient Weapon Secrets Revealed by Salt Mine** | **Parthian Cavalry's Deadly Feint** |
-| [![Greek Kopis](https://i.ytimg.com/vi/uBTWCAxivK4/hqdefault.jpg)](https://www.youtube.com/shorts/uBTWCAxivK4) | [![War Elephants](https://i.ytimg.com/vi/aGh8KBL8H5k/hqdefault.jpg)](https://www.youtube.com/shorts/aGh8KBL8H5k) | [![Repeating Crossbow](https://i.ytimg.com/vi/sR1VgquTM2g/hqdefault.jpg)](https://www.youtube.com/shorts/sR1VgquTM2g) |
-| **The Greek Kopis** | **Hannibal's War Elephants** | **Chinese Repeating Crossbow** |
+<table>
+<tr>
+<td align="center" width="25%"><a href="https://www.youtube.com/shorts/Ix9woSnXPr0"><img src="https://i.ytimg.com/vi/Ix9woSnXPr0/hqdefault.jpg" width="200" alt="Medieval Trebuchet Secrets"></a><br><b>Blade Archives</b><br><sub>Medieval Trebuchet Secrets<br>👁 10K views</sub></td>
+<td align="center" width="25%"><a href="https://www.youtube.com/shorts/NNIOBWfEIwg"><img src="https://i.ytimg.com/vi/NNIOBWfEIwg/hqdefault.jpg" width="200" alt="AI Solved a 50-Year Biology Mystery"></a><br><b>Fracture Layer</b><br><sub>AI Solved a 50-Year Biology Mystery<br>👁 1.3K views</sub></td>
+<td align="center" width="25%"><a href="https://www.youtube.com/shorts/7_D5FsEoBxo"><img src="https://i.ytimg.com/vi/7_D5FsEoBxo/hqdefault.jpg" width="200" alt="The WW2 Order That Shot Retreating Soldiers"></a><br><b>Erased Lore</b><br><sub>The WW2 Order That Shot Retreating Soldiers<br>👁 1.3K views</sub></td>
+<td align="center" width="25%"><a href="https://www.youtube.com/shorts/X0hlUZGAp30"><img src="https://i.ytimg.com/vi/X0hlUZGAp30/hqdefault.jpg" width="200" alt="Angkor Wat's Water Technology"></a><br><b>Ruined Clock</b><br><sub>Angkor Wat's Water Technology<br>👁 1.2K views</sub></td>
+</tr>
+<tr>
+<td align="center" width="25%"><a href="https://www.youtube.com/shorts/-mnp1vFvsV0"><img src="https://i.ytimg.com/vi/-mnp1vFvsV0/hqdefault.jpg" width="200" alt="Three Boy Scouts Murdered at Camp, 1977"></a><br><b>Filed And Forgotten</b><br><sub>Three Boy Scouts Murdered at Camp, 1977<br>👁 1.2K views</sub></td>
+<td align="center" width="25%"><a href="https://www.youtube.com/shorts/FEmbNsUfe0M"><img src="https://i.ytimg.com/vi/FEmbNsUfe0M/hqdefault.jpg" width="200" alt="America's Orphan Trains"></a><br><b>Covered Pages</b><br><sub>America's Orphan Trains<br>👁 1K views</sub></td>
+<td align="center" width="25%"><a href="https://www.youtube.com/shorts/pglxipAXNlE"><img src="https://i.ytimg.com/vi/pglxipAXNlE/hqdefault.jpg" width="200" alt="Aztec Goddess of Filth & Forgiveness"></a><br><b>Myth Bleed</b><br><sub>Aztec Goddess of Filth & Forgiveness<br>👁 1K views</sub></td>
+<td align="center" width="25%"><a href="https://www.youtube.com/shorts/bbNbDI8sojs"><img src="https://i.ytimg.com/vi/bbNbDI8sojs/hqdefault.jpg" width="200" alt="The Bridge Where Dogs Jump"></a><br><b>The Cursed Map</b><br><sub>The Bridge Where Dogs Jump<br>👁 838 views</sub></td>
+</tr>
+<tr>
+<td align="center" width="25%"><a href="https://www.youtube.com/shorts/2A0Pd3Nvgog"><img src="https://i.ytimg.com/vi/2A0Pd3Nvgog/hqdefault.jpg" width="200" alt="The Georgia Guidestones Mystery"></a><br><b>Restricted Lore</b><br><sub>The Georgia Guidestones Mystery<br>👁 452 views</sub></td>
+<td align="center" width="25%"><a href="https://www.youtube.com/shorts/B_Ngw8TmkpE"><img src="https://i.ytimg.com/vi/B_Ngw8TmkpE/hqdefault.jpg" width="200" alt="Little Albert: The Baby Conditioned to Fear"></a><br><b>Classified Cognition</b><br><sub>Little Albert: The Baby Conditioned to Fear<br>👁 337 views</sub></td>
+<td align="center" width="25%"><a href="https://www.youtube.com/shorts/Ubv4W59UIRA"><img src="https://i.ytimg.com/vi/Ubv4W59UIRA/hqdefault.jpg" width="200" alt="Damascus ki Paani wali Ghadi (Urdu/Hindi)"></a><br><b>Muslim Ummah Awareness Hub</b><br><sub>Damascus ki Paani wali Ghadi (Urdu/Hindi)<br>👁 143 views</sub></td>
+</tr>
+</table>
 
-👉 **Full channel:** [youtube.com/@BladeArchives1](https://www.youtube.com/@BladeArchives1)
+👉 All channels with their Instagram and Facebook links: [11 channels running on this pipeline](#-11-channels-running-on-this-pipeline)
 
 ---
 
