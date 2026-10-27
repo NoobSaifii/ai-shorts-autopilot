@@ -1,0 +1,2 @@
+All files in this folder are synthesized by scripts/make_sfx.py (FFmpeg noise/sine + envelopes).
+Original work, no third-party license.

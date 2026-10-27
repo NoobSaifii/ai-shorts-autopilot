@@ -1,0 +1,12 @@
+Loud_On_Seventh_Studios_Live_Recordings_08.2023-After_11_Reaping_Loops_Freqs_And.mp3
+  source: https://archive.org/details/Loud_On_Seventh_Studios_Live_Recordings_08.2023-After
+  license: https://creativecommons.org/publicdomain/mark/1.0/
+
+gt571ComingStorm-Lethargy_04.Letargy.mp3
+  source: https://archive.org/details/gt571ComingStorm-Lethargy
+  license: http://creativecommons.org/publicdomain/zero/1.0/
+
+gt508F.a.n.t.a.s.t-Solaris_5.BlackHole.mp3
+  source: https://archive.org/details/gt508F.a.n.t.a.s.t-Solaris
+  license: http://creativecommons.org/publicdomain/zero/1.0/
+

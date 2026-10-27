@@ -1,0 +1,8 @@
+hr087_hr087_AntoniRobert_03.mp3
+  source: https://archive.org/details/hr087
+  license: http://creativecommons.org/publicdomain/zero/1.0/
+
+GRIST-NEWEYES_03_With_New_Eyes_22_1_2013_.mp3
+  source: https://archive.org/details/GRIST-NEWEYES
+  license: http://creativecommons.org/publicdomain/zero/1.0/
+

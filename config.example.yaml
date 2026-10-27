@@ -1,0 +1,151 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#  AI Shorts Autopilot — configuration template
+#
+#  1. Copy this file:   cp config.example.yaml config.yaml
+#  2. Fill in every value marked  <-- CHANGE ME
+#  3. NEVER commit config.yaml (it is in .gitignore). In the cloud it is
+#     restored from the CONFIG_YAML_B64 GitHub secret.
+#
+#  Full walkthrough: docs/ folder (start with docs/01-prerequisites.md)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ── Script writer (LLM) ─────────────────────────────────────────────────────
+# Gemini is the free default. Get a key: https://aistudio.google.com/apikey
+# Tip: put several keys (one per line) in gemini_keys.txt — the pipeline
+# rotates through them when one hits its rate limit.
+gemini:
+  api_key: "YOUR_GEMINI_API_KEY"          # <-- CHANGE ME
+  model: gemini-2.5-flash
+  models: [gemini-2.5-flash]
+  temperature: 0.92
+  top_p: 0.95
+  top_k: 40
+
+# Provider chain — tried top to bottom until one returns a script.
+# Remove the providers you don't use. Prefer `api_key_env` (read from an
+# environment variable / GitHub secret) over pasting keys here.
+llm:
+  temperature: 0.95
+  top_p: 0.95
+  top_k: 40
+  providers:
+    # Optional: Claude (official API or any Anthropic-compatible endpoint)
+    # - type: anthropic
+    #   base_url: https://api.anthropic.com
+    #   api_key_env: ANTHROPIC_API_KEY
+    #   model: claude-sonnet-4-5
+    #   max_tokens: 16000
+    #   attempts: 3
+    # Optional: any OpenAI-compatible endpoint (OpenAI, OpenRouter, Groq, ...)
+    # - type: openai
+    #   base_url: https://api.openai.com
+    #   api_key_env: OPENAI_API_KEY
+    #   model: gpt-4o-mini
+    - type: gemini
+      models: [gemini-2.5-flash]
+
+# ── Voice (TTS) ─────────────────────────────────────────────────────────────
+# Kokoro v1.0 runs locally/in CI for free. Falls back to Microsoft Edge TTS.
+kokoro:
+  base_url: http://localhost:8002   # legacy field, keep as is (Kokoro runs in-process)
+  voice: am_onyx       # default voice; each channel below can override it
+  speed: 1.0
+
+# ── Image generation (Cloudflare Workers AI — free) ─────────────────────────
+# One URL per deployed worker (cloudflare-worker/worker.js). The pipeline
+# rotates between them and skips any worker whose daily free quota is used up.
+# Add ?key=... if you set an ACCESS_KEY secret on the worker.
+image_providers:
+  - "https://ai-image-worker.YOUR-SUBDOMAIN.workers.dev/?key=YOUR_ACCESS_KEY"   # <-- CHANGE ME
+
+# ── Video rendering ─────────────────────────────────────────────────────────
+video:
+  fps: 30
+  width: 1024
+  height: 1792
+  render_width: 1080
+  render_height: 1920
+  scene_tail_pad: 0.35
+  transition_duration: 0
+  crf: 15                  # lower = better quality, bigger file
+  supersample: 1.5         # render bigger then downscale = sharper motion
+  quality_preset: veryfast
+  use_gpu: false
+  flash_cuts: true
+  progress_bar: true
+  watermark: true
+  hook_boost: true
+  cinematic_finish: true
+  bloom: false
+thumbnails: true
+
+pipeline:
+  max_parallel_scenes: 2
+  output_root: output              # local render folder
+  music_dir: assets/music
+  sfx_dir: assets/sfx
+  fonts_dir: assets/fonts
+  music_path: assets/background.mp3
+  music_volume: 0.15
+  voice_volume: 1.0
+  target_max_duration: 175         # seconds (YouTube Shorts limit is 180)
+  use_heartbeat: false
+
+# ── Topics ──────────────────────────────────────────────────────────────────
+# Option A (simplest): topics.xlsx in this repo — one sheet per channel.
+# Option B (recommended for 24/7): Google Sheets — set google_sheet_id and add
+#   google_service_account.json. Status updates live, no git commits needed.
+topics_file: topics.xlsx
+google_sheet_id: ""                 # e.g. 1AbC...xyz (from the sheet URL)
+google_sa_file: google_service_account.json
+
+db_path: pipeline_jobs.db
+logs_dir: logs
+
+# ── Channels ────────────────────────────────────────────────────────────────
+# One entry per channel. `name` must match prompts/<name>.txt (falls back to a
+# default prompt) and youtube_credentials_<Name_With_Underscores>.json.
+#
+#   platforms     : any of youtube, instagram, facebook, tiktok
+#   sheet         : sheet/tab name in topics.xlsx or your Google Sheet
+#   voice         : Kokoro voice (am_onyx, bm_george, af_bella, ...) or an
+#                   Edge voice (e.g. hi-IN-SwaraNeural, ur-PK-AsadNeural)
+#   music_mood    : dark_mystery | eerie_horror | epic_history | tense_science
+#   subtitle_color: ASS colour &H00BBGGRR (note: Blue-Green-Red order)
+#   priority      : true = always processed first in the daily run
+#   motion_graphics: true = add animated HyperFrames cards (needs Node 22)
+#   upload        : Meta (Facebook/Instagram) IDs + token — only needed if
+#                   platforms includes facebook or instagram
+channels:
+  - name: Blade Archives
+    platforms: [youtube, instagram, facebook]
+    sheet: Ancient Weapons & Warfare
+    voice: am_onyx
+    speed: 0.93
+    music_mood: epic_history
+    subtitle_color: "&H002445FF"
+    upload:
+      fb_page_id: "YOUR_FACEBOOK_PAGE_ID"          # <-- CHANGE ME
+      ig_user_id: "YOUR_INSTAGRAM_BUSINESS_ID"     # <-- CHANGE ME
+      meta_access_token: "YOUR_LONG_LIVED_PAGE_TOKEN"   # <-- CHANGE ME
+
+  - name: The Cursed Map
+    platforms: [youtube]            # YouTube only — no `upload:` block needed
+    sheet: Cursed Places & Haunted Locatio
+    voice: af_nicole
+    speed: 0.92
+    voice_gain: 1.25
+    music_mood: eerie_horror
+    subtitle_color: "&H006AFF39"
+
+  - name: Classified Cognition
+    platforms: [youtube]
+    sheet: Dark Psychology
+    voice: af_bella
+    speed: 0.97
+    music_mood: tense_science
+    subtitle_color: "&H0000A5FF"
+
+# ── Notifications ───────────────────────────────────────────────────────────
+# Email alerts use env vars GMAIL_ADDRESS / GMAIL_APP_PASSWORD / GMAIL_TO
+# (set them as GitHub secrets). Nothing to fill in here.

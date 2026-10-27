@@ -1,0 +1,43 @@
+# ── Secrets — NEVER commit any of these ─────────────────────────────────────
+config.yaml
+config.local.yaml
+gemini_keys.txt
+client_secrets.json
+google_service_account.json
+youtube_credentials_*.json
+youtube_analytics_*.json
+tiktok_cookies_*
+github_secrets.txt
+.env
+*.env
+.dev.vars
+*.pem
+*.key
+
+# ── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+dist/
+build/
+
+# ── Pipeline output / runtime state ─────────────────────────────────────────
+output/
+logs/
+*.log
+pipeline_jobs.db
+kokoro_models/
+topics_backup_*.csv
+motion_templates/.hyperframes/
+cloudflare-worker/.wrangler/
+node_modules/
+
+# ── OS / IDE ────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.claude/

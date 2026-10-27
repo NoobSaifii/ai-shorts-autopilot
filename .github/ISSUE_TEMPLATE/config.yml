@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Setup guides
+    url: https://github.com/NoobSaifii/ai-shorts-autopilot/tree/main/docs
+    about: Most questions are answered in the step-by-step docs.

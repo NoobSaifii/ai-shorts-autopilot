@@ -1,0 +1,33 @@
+# Pronunciation overrides for Kokoro TTS (misaki G2P).
+#
+# Only add words misaki ACTUALLY gets wrong — it already has a 179k-word gold
+# lexicon, so most proper nouns resolve correctly on their own. Check first:
+#   python -c "from misaki import en,espeak; g=en.G2P(trf=False,british=False,\
+#     fallback=espeak.EspeakFallback(british=False)); print(g('YourWord')[0])"
+#
+# Phonemes use Kokoro's set, NOT plain IPA. Diphthongs are single capitals:
+#   I = aɪ (bite)   A = eɪ (bait)   O = oʊ (boat)   W = aʊ (bout)   Y = ɔɪ (boy)
+#   T = flapped t (water)           ˈ = primary stress   ˌ = secondary
+# Kokoro SILENTLY DROPS phonemes it doesn't know — always listen back after adding.
+#
+# Keys are lowercase; matching is case-insensitive.
+
+words:
+  # ── Blade Archives — weapons ────────────────────────────────────────────
+  xiphos:       "zˈɪfɑs"          # was zˈɪfOz — final s voiced to z
+  kopis:        "kˈOpɪs"          # was kˈOpiz — final s voiced to z
+  ulfberht:     "ˈʊlfbɛɹt"        # was ˈʌlfbəɹht — broken rht cluster
+
+  # ── Ruined Clock / Erased Lore — ancient history ────────────────────────
+  hattusa:      "hɑtˈusə"         # was hˈæTusə — stress on wrong syllable
+  tutankhamun:  "tˌutənkˈɑmən"    # was tˈutəŋkhˌæmʌn — kh cluster + stress
+
+  # ── Myth Bleed — mythology ──────────────────────────────────────────────
+  valkyrie:     "vˈælkɪɹi"        # was vælkˈɪɹi — stress on wrong syllable
+  jotunheim:    "jˈOtʊnhˌIm"      # was ʤˈɑtənhˌIm — Norse J is /j/, not /dʒ/
+
+  # ── The Cursed Map — places ─────────────────────────────────────────────
+  teotihuacan:  "tˌAOTiwɑkˈɑn"    # was tɪˈɑTɪhjˌuækən — badly mangled
+
+  # ── Classified Cognition — psychology ───────────────────────────────────
+  zeigarnik:    "zAˈɡɑɹnɪk"       # was zˈIɡɑɹnˌɪk — stress + first vowel

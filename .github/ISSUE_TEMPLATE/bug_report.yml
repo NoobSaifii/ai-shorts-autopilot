@@ -1,0 +1,29 @@
+name: 🐞 Bug report
+description: Something isn't working
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "⚠️ **Never paste API keys, tokens, or config.yaml contents.** Replace them with `***`."
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output (secrets removed)
+      render: text
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where does it run?
+      options: [GitHub Actions, Local Windows, Local macOS, Local Linux]
+    validations:
+      required: true
+  - type: input
+    id: step
+    attributes:
+      label: Which part? (script, images, voice, render, YouTube, Instagram, Facebook, TikTok…)

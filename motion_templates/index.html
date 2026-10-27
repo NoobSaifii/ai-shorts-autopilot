@@ -1,0 +1,120 @@
+<!doctype html>
+<!-- One transparent 1080x1920 card, rendered per scene by modules/motion_graphics.py.
+     kind picks the layout; the pipeline overlays the WebM on the scene's picture,
+     above the caption band (captions sit ~66% down, the hook stamp at the top). -->
+<html
+  data-composition-variables='[
+    {"id":"kind","type":"enum","label":"Kind","default":"date_stamp","options":[
+      {"value":"date_stamp","label":"Date stamp"},{"value":"stat_counter","label":"Stat counter"},
+      {"value":"name_card","label":"Name card"},{"value":"quote_card","label":"Quote card"},
+      {"value":"chapter_title","label":"Chapter title"}]},
+    {"id":"title","type":"string","label":"Title","default":"1258"},
+    {"id":"subtitle","type":"string","label":"Subtitle","default":"Baghdad"},
+    {"id":"accent","type":"color","label":"Accent","default":"#FFD700"}]'
+>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face { font-family: "Anton"; src: url("assets/fonts/Anton-Regular.ttf"); }
+      html, body { margin: 0; background: transparent; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+      .card { position: absolute; left: 90px; right: 90px; top: 330px; opacity: 0;
+              display: flex; flex-direction: column; align-items: center; text-align: center; }
+      .glass { position: absolute; inset: -36px -40px; border-radius: 28px;
+               background: rgba(10, 11, 16, 0.72); border: 2px solid rgba(255,255,255,0.10); }
+      .big { position: relative; font-family: "Anton"; color: var(--accent); line-height: 1.02;
+             font-size: 168px; text-shadow: 0 6px 30px rgba(0,0,0,0.65); }
+      .small { position: relative; font-family: "Oswald"; color: #fff; font-size: 54px;
+               letter-spacing: 3px; text-transform: uppercase; margin-top: 18px; }
+      .bar { position: relative; height: 8px; width: 520px; background: var(--accent);
+             margin-top: 22px; transform-origin: left center; }
+      .pin { display: inline-block; width: 22px; height: 22px; border-radius: 50%;
+             background: var(--accent); margin-right: 16px; vertical-align: middle; }
+      #name_card { align-items: flex-start; text-align: left; top: 360px; }
+      #name_card .big { font-size: 112px; color: #fff; }
+      #name_card .small { color: var(--accent); font-size: 46px; }
+      #name_card .bar { position: absolute; left: -40px; top: 0; width: 12px; height: 100%; margin: 0; transform-origin: center top; }
+      #quote_card .big { font-family: "Playfair Display"; font-style: italic; color: #fff; font-size: 78px; line-height: 1.18; }
+      #quote_card .mark { font-family: "Anton"; color: var(--accent); font-size: 200px; line-height: 0.6; height: 110px; position: relative; }
+      #chapter_title .big { font-size: 132px; color: #fff; text-transform: uppercase; }
+      #chapter_title .rule { position: relative; height: 4px; width: 760px; background: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="3.2" data-width="1080" data-height="1920">
+      <div id="date_stamp" class="card"><div class="glass"></div>
+        <div id="ds-title" class="big" data-var-text="title">1258</div>
+        <div class="bar"></div>
+        <div class="small"><span class="pin"></span><span data-var-text="subtitle">Baghdad</span></div>
+      </div>
+      <div id="stat_counter" class="card"><div class="glass"></div>
+        <div id="sc-num" class="big">0</div>
+        <div class="small" data-var-text="subtitle">books burned</div>
+      </div>
+      <div id="name_card" class="card"><div class="glass"></div><div class="bar"></div>
+        <div id="nc-title" class="big" data-var-text="title">Al-Khwarizmi</div>
+        <div class="small" data-var-text="subtitle">Father of algebra</div>
+      </div>
+      <div id="quote_card" class="card"><div class="glass"></div>
+        <div class="mark">&ldquo;</div>
+        <div id="qc-title" class="big"></div>
+        <div class="small" data-var-text="subtitle">Ibn Sina</div>
+      </div>
+      <div id="chapter_title" class="card">
+        <div class="rule"></div>
+        <div id="ct-title" class="big" data-var-text="title">The cover-up</div>
+        <div class="rule"></div>
+      </div>
+    </div>
+    <script src="assets/gsap.min.js"></script>
+    <script>
+      const v =(window.__hyperframes && window.__hyperframes.getVariables()) || {};
+      const kind = v.kind || "date_stamp";
+      document.getElementById("root").style.setProperty("--accent", v.accent || "#FFD700");
+      const card = "#" + kind;
+      const tl = gsap.timeline({ paused: true });
+
+      // Shared: the card lands in ~0.5s, holds dead still, leaves in 0.25s.
+      tl.fromTo(card, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 0.05);
+      tl.fromTo(card + " .glass", { scaleX: 0.82, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.45, ease: "expo.out" }, 0.05);
+
+      if (kind === "date_stamp") {
+        tl.fromTo("#ds-title", { opacity: 0, scale: 1.35, filter: "blur(10px)" },
+                  { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.4, ease: "expo.out" }, 0.12);
+        tl.fromTo(card + " .bar", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power4.out" }, 0.35);
+        tl.fromTo(card + " .small", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 0.5);
+      } else if (kind === "stat_counter") {
+        const target = parseInt(String(v.title || "0").replace(/\D/g, ""), 10) || 0;
+        const num = document.getElementById("sc-num");
+        const box = { n: 0 };
+        tl.fromTo("#sc-num", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.4)" }, 0.1);
+        tl.fromTo(box, { n: 0 }, { n: target, duration: 1.1, ease: "power3.out",
+                  onUpdate: () => { num.textContent = Math.round(box.n).toLocaleString("en-US"); } }, 0.1);
+        tl.fromTo(card + " .small", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 0.55);
+      } else if (kind === "name_card") {
+        tl.fromTo(card + " .bar", { scaleY: 0 }, { scaleY: 1, duration: 0.35, ease: "power4.out" }, 0.08);
+        tl.fromTo("#nc-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.55, ease: "power3.out" }, 0.18);
+        tl.fromTo(card + " .small", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.35, ease: "power3.out" }, 0.55);
+      } else if (kind === "quote_card") {
+        // Built from the variable (not the bound text) so the split never races the binding.
+        const el = document.getElementById("qc-title");
+        String(v.title || "").split(/\s+/).forEach((w, i) => {
+          const s = document.createElement("span");
+          s.className = "w";
+          s.textContent = (i ? " " : "") + w;
+          el.appendChild(s);
+        });
+        tl.fromTo(card + " .mark", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, 0.08);
+        tl.fromTo("#qc-title .w", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.07 }, 0.25);
+        tl.fromTo(card + " .small", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.9);
+      } else {
+        tl.fromTo(card + " .rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power4.out", stagger: 0.08 }, 0.05);
+        tl.fromTo("#ct-title", { opacity: 0, scaleX: 1.25, filter: "blur(8px)" },
+                  { opacity: 1, scaleX: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, 0.15);
+      }
+
+      tl.to(card, { opacity: 0, filter: "blur(8px)", duration: 0.25, ease: "power3.in" }, 2.85);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

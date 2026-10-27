@@ -1,0 +1,10 @@
+name = "ai-image-worker"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[ai]
+binding = "AI"
+
+# Optional: pick another Workers AI image model
+# [vars]
+# MODEL = "@cf/bytedance/stable-diffusion-xl-lightning"

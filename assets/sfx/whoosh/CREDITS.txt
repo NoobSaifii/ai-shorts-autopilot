@@ -1,0 +1,1 @@
+card-whoosh.wav: synthesized with FFmpeg (pink noise + envelope) — original, no license needed.

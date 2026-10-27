@@ -1,0 +1,256 @@
+name: Auto Daily Video Upload
+
+# How this runs 24/7 for free:
+#   * Public repo  -> GitHub Actions minutes are unlimited and free.
+#   * cron-job.org -> calls the GitHub API (workflow_dispatch) at the times you
+#                     choose. Far more punctual than GitHub's own `schedule:`.
+# See docs/07-automation-24x7.md for the full step-by-step setup.
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: 'Run ONE channel only (exact name from config.yaml). Leave empty for all channels.'
+        required: false
+        default: ''
+        type: string
+      skip_channels:
+        description: 'Comma-separated channels to skip (e.g. "Blade Archives,Myth Bleed")'
+        required: false
+        default: ''
+        type: string
+      no_upload:
+        description: 'QA mode: generate videos only — no uploads, no topic changes'
+        required: false
+        default: false
+        type: boolean
+
+  # Optional fallback: GitHub's own scheduler (can be delayed 10-60 min under load).
+  # Uncomment if you don't want to use cron-job.org.
+  # schedule:
+  #   - cron: '0 13 * * *'   # 13:00 UTC every day
+
+concurrency:
+  group: daily-video-upload
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360     # GitHub's hard cap for one job is 6 hours
+
+    permissions:
+      contents: write        # commit the updated topics.xlsx back to the repo
+
+    steps:
+      # ── 1. Checkout ──────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── 1b. Free the runner's disk (renders need ~1GB per channel) ──────────
+      - name: Free up runner disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc \
+                      /usr/local/share/boost /usr/share/swift || true
+          sudo docker image prune --all --force >/dev/null 2>&1 || true
+          sudo apt-get clean
+          df -h /
+
+      # ── 2. Toolchains ────────────────────────────────────────────────────────
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      # Motion-graphic cards (motion_templates/) render through HyperFrames,
+      # which needs Node 22+ and its bundled headless Chrome.
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Prepare HyperFrames renderer
+        continue-on-error: true   # no renderer → videos just ship without cards
+        working-directory: motion_templates
+        run: npx --yes hyperframes@0.8.188 browser ensure
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak-ng --fix-missing
+
+      - name: Install Python packages
+        run: |
+          # The runner has no GPU — install the small CPU-only torch wheel first
+          # so pip doesn't pull the 3-4GB CUDA build.
+          pip install --retries 10 --timeout 60 torch --index-url https://download.pytorch.org/whl/cpu
+          pip install --retries 10 --timeout 60 -r requirements.txt
+          python -m spacy download en_core_web_sm
+
+      - name: Cache HuggingFace models (Whisper / Pocket TTS)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-models-v2
+
+      - name: Cache Kokoro model files
+        uses: actions/cache@v4
+        with:
+          path: kokoro_models
+          key: kokoro-model-v1_0
+
+      - name: Download Kokoro v1.0 model files
+        run: |
+          mkdir -p kokoro_models
+          base=https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0
+          [ -f kokoro_models/kokoro-v1.0.onnx ] || wget -q -O kokoro_models/kokoro-v1.0.onnx $base/kokoro-v1.0.onnx
+          [ -f kokoro_models/voices-v1.0.bin ]  || wget -q -O kokoro_models/voices-v1.0.bin  $base/voices-v1.0.bin
+          ls -la kokoro_models
+
+      # ── 3. Restore secrets (never echoed, never committed) ───────────────────
+      # All values come from Settings → Secrets and variables → Actions.
+      # Build them with:  python scripts/make_secrets.py
+      - name: Restore config and credential files
+        env:
+          CONFIG_YAML_B64:       ${{ secrets.CONFIG_YAML_B64 }}
+          GEMINI_KEYS_B64:       ${{ secrets.GEMINI_KEYS_B64 }}
+          GOOGLE_SA_B64:         ${{ secrets.GOOGLE_SA_B64 }}
+          YT_CLIENT_SECRETS_B64: ${{ secrets.YT_CLIENT_SECRETS_B64 }}
+          YT_TOKENS_B64:         ${{ secrets.YT_TOKENS_B64 }}
+        run: |
+          set -euo pipefail
+          restore() { if [ -n "${2:-}" ]; then printf '%s' "$2" | tr -d '\r\n' | base64 -d > "$1"; echo "restored $1"; fi; }
+          if [ -z "${CONFIG_YAML_B64:-}" ]; then
+            echo "::error::CONFIG_YAML_B64 secret is missing — see docs/06-github-secrets.md"; exit 1
+          fi
+          restore config.yaml                  "$CONFIG_YAML_B64"
+          restore gemini_keys.txt              "${GEMINI_KEYS_B64:-}"
+          restore google_service_account.json  "${GOOGLE_SA_B64:-}"
+          restore client_secrets.json          "${YT_CLIENT_SECRETS_B64:-}"
+          # All youtube_credentials_*.json / youtube_analytics_*.json in one zip
+          if [ -n "${YT_TOKENS_B64:-}" ]; then
+            printf '%s' "$YT_TOKENS_B64" | tr -d '\r\n' | base64 -d > /tmp/yt_tokens.zip
+            unzip -o -q /tmp/yt_tokens.zip -d . && rm /tmp/yt_tokens.zip
+            ls youtube_*.json | sed 's/^/restored /'
+          fi
+
+      # Public repo = public logs. GitHub only masks whole secret values, not the
+      # keys *inside* config.yaml, so register every sensitive value as a mask.
+      - name: Mask sensitive values in logs
+        run: |
+          python - <<'PYEOF'
+          import re, yaml, pathlib
+          SENSITIVE = re.compile(r"key|token|secret|pass|_id$|providers|url", re.I)
+          def walk(o, k=""):
+              if isinstance(o, dict):
+                  for kk, v in o.items(): walk(v, kk)
+              elif isinstance(o, list):
+                  for v in o: walk(v, k)
+              elif isinstance(o, (str, int)) and len(str(o)) >= 6 and SENSITIVE.search(k):
+                  print(f"::add-mask::{o}")
+          walk(yaml.safe_load(open("config.yaml", encoding="utf-8")))
+          keys = pathlib.Path("gemini_keys.txt")
+          if keys.exists():
+              for line in keys.read_text().split():
+                  print(f"::add-mask::{line}")
+          PYEOF
+
+      # ── 4. Point config at cloud paths ───────────────────────────────────────
+      - name: Patch config.yaml for the cloud runner
+        run: |
+          rm -rf /tmp/video_output && mkdir -p /tmp/video_output
+          python - <<'PYEOF'
+          import yaml
+          with open("config.yaml", encoding="utf-8") as f:
+              cfg = yaml.safe_load(f)
+          p = cfg.setdefault("pipeline", {})
+          p["output_root"] = "/tmp/video_output"
+          p["music_dir"]   = "assets/music"
+          p["sfx_dir"]     = "assets/sfx"
+          p["fonts_dir"]   = "assets/fonts"
+          p["music_path"]  = "assets/background.mp3"
+          p["keep_intermediates"] = False
+          p["max_parallel_scenes"] = min(int(p.get("max_parallel_scenes", 2)), 2)  # 2-core runner
+          cfg.setdefault("topics_file", "topics.xlsx")
+          cfg["google_sa_file"] = "google_service_account.json"
+          cfg["db_path"]  = "/tmp/pipeline_jobs.db"
+          cfg["logs_dir"] = "/tmp/logs"
+          v = cfg.setdefault("video", {})
+          v.setdefault("supersample", 1.5)
+          v["quality_preset"] = "veryfast"   # ~4x faster on the free runner, same CRF
+          v["use_gpu"] = False
+          with open("config.yaml", "w", encoding="utf-8") as f:
+              yaml.dump(cfg, f, allow_unicode=True, default_flow_style=False)
+          print("config.yaml patched for cloud.")
+          PYEOF
+
+      - name: Configure git for topic-status commits
+        run: |
+          git config user.name  "Video Pipeline Bot"
+          git config user.email "pipeline-bot@noreply.github.com"
+
+      # ── 5. Run the pipeline ──────────────────────────────────────────────────
+      - name: Run daily pipeline
+        env:
+          # LLM keys referenced from config.yaml via `api_key_env:` (all optional)
+          ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
+          AGENTROUTER_API_KEY: ${{ secrets.AGENTROUTER_API_KEY }}
+          # Email notifications (optional)
+          GMAIL_ADDRESS:      ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          GMAIL_TO:           ${{ secrets.GMAIL_TO }}
+          # Cloudflare R2 public hosting for Instagram uploads (recommended)
+          IG_S3_ENDPOINT_URL:      ${{ secrets.IG_S3_ENDPOINT_URL }}
+          IG_S3_BUCKET:            ${{ secrets.IG_S3_BUCKET }}
+          IG_S3_ACCESS_KEY_ID:     ${{ secrets.IG_S3_ACCESS_KEY_ID }}
+          IG_S3_SECRET_ACCESS_KEY: ${{ secrets.IG_S3_SECRET_ACCESS_KEY }}
+          IG_S3_REGION:            ${{ secrets.IG_S3_REGION }}
+          IG_S3_PUBLIC_BASE_URL:   ${{ secrets.IG_S3_PUBLIC_BASE_URL }}
+          IG_S3_PREFIX:            ${{ secrets.IG_S3_PREFIX }}
+          CATBOX_USERHASH:         ${{ secrets.CATBOX_USERHASH }}
+          # TikTok (optional, needs an audited TikTok developer app)
+          TIKTOK_CLIENT_KEY:    ${{ secrets.TIKTOK_CLIENT_KEY }}
+          TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+          IN_CHANNEL:   ${{ github.event.inputs.channel }}
+          IN_SKIP:      ${{ github.event.inputs.skip_channels }}
+          IN_NO_UPLOAD: ${{ github.event.inputs.no_upload }}
+        run: |
+          args=()
+          [ "$IN_NO_UPLOAD" = "true" ] && args+=(--no-upload)
+          if [ -n "$IN_CHANNEL" ]; then
+            echo "Single channel: $IN_CHANNEL"
+            python daily_runner.py --channel "$IN_CHANNEL" "${args[@]}"
+          elif [ -n "$IN_SKIP" ]; then
+            echo "All channels except: $IN_SKIP"
+            python daily_runner.py --skip "$IN_SKIP" "${args[@]}"
+          else
+            echo "All channels"
+            python daily_runner.py "${args[@]}"
+          fi
+
+      - name: Disk report
+        if: always()
+        run: |
+          df -h /
+          du -sh /tmp/video_output 2>/dev/null || true
+
+      # ── 6. Persist topic status (Excel mode only; Google Sheets updates live) ─
+      - name: Commit updated topics file + analytics history
+        if: ${{ success() && github.event.inputs.no_upload != 'true' }}
+        run: |
+          git add topics.xlsx 2>/dev/null || true
+          git add analytics/history/*.json 2>/dev/null || true
+          git diff --staged --quiet || (
+            git commit -m "chore: sync topics status [skip ci]" &&
+            git push
+          )
+
+      # ── 7. Never leave credentials on disk, even on a failed run ────────────
+      - name: Remove credential files
+        if: always()
+        run: rm -f config.yaml gemini_keys.txt google_service_account.json client_secrets.json youtube_*.json
